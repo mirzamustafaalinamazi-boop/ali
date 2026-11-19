@@ -49,3 +49,11 @@ jobs:
           grep -q '"method":"transparent-rules-not-trained-ML"' /tmp/otd-recommend.json
           grep -q '"looks":' /tmp/otd-recommend.json
           printf 'Rule-based recommendations API is responding\n'
+          curl --fail --location --silent --show-error --max-time 25 "$base/photo-preview.js" -o /tmp/otd-photo-preview.js
+          grep -q "export function photoPage" /tmp/otd-photo-preview.js
+          grep -q "in this open browser tab" /tmp/otd-photo-preview.js
+          curl --fail --location --silent --show-error --max-time 25 "$base/photo-engine.js" -o /tmp/otd-photo-engine.js
+          grep -q "export function validatePhotoFile" /tmp/otd-photo-engine.js
+          curl --fail --location --silent --show-error --max-time 25 "$base/avatar-core.js" -o /tmp/otd-avatar-core.js
+          grep -q "export function avatarSvg" /tmp/otd-avatar-core.js
+          printf 'Real-person photo styling and fallback avatar are accessible\n'
