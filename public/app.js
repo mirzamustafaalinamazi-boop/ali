@@ -10,7 +10,7 @@ let page=['discover','shop','stylist','wardrobe','saved','retailer','stores','ad
 let category='All',search='',selected=null,chosenSize='M',chosenOutlet='',results=[],csvText='sku,outlet_id,quantity\nOTD-001,o1,5',csvResult=null,occasion='Casual',style='Minimal',color='Any',size='M',shoeSize='40',budget=7000;
 const allProducts=()=>[...seedProducts,...state.customProducts];
 const allInventory=()=>[...seedInventory,...state.customInventory];
-const clean=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;',"'":'&#39;'}[c])); 
+const clean=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); 
 function save(){try{localStorage.setItem(key,JSON.stringify(state))}catch{alert('Storage is full; delete old demo items to free space')}}
 function note(action,detail){state.events.unshift({action,detail,at:new Date().toLocaleString('en-IN')});state.events=state.events.slice(0,100);save()}
 const find=id=>allProducts().find(p=>p.id===id);
