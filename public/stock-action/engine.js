@@ -15,3 +15,67 @@ export function publish(state,id,value){const p=state.products.find(x=>x.id===id
 export function publicProducts(state){return state.products.filter(p=>p.published&&p.qty>0).map(p=>({id:p.id,name:p.name,category:p.category,size:p.size,color:p.color,price:p.price,available:p.qty}))}
 export function metrics(s){return {skus:s.products.length,units:s.products.reduce((n,p)=>n+p.qty,0),low:s.products.filter(p=>p.qty<=p.reorder).length,value:s.products.reduce((n,p)=>n+p.qty*p.cost,0),revenue:s.sales.reduce((n,p)=>n+p.amount,0)}}
 export function suggest(s){const available=publicProducts(s);const tops=available.filter(p=>["Shirts","Tops","Ethnic","Jackets"].includes(p.category));const bottoms=available.filter(p=>["Denim","Bottoms"].includes(p.category));if(!tops.length||!bottoms.length)return null;const top=tops[0],bottom=bottoms[0];return {items:[top,bottom],total:top.price+bottom.price,reason:"Demo rules choose available, published styles. No machine-learning model is connected."}}
+
+
+/** Noorkhan Bazaar 5: extended demo engine. No persistent/server-side authorization. */
+export function barcodeFor(product){return product.barcode||product.code||product.id}
+export function findByScan(state,raw){const code=String(raw??"").trim().toUpperCase();return state.products.find(p=>[barcodeFor(p),p.id].some(v=>String(v).toUpperCase()===code))||null}
+export function addProduct(state,input){
+ const id=String(input.id||"").trim().toUpperCase(),barcode=String(input.barcode||id).trim().toUpperCase();
+ const name=String(input.name||"").trim(),category=String(input.category||"").trim();
+ const qty=Number(input.qty),price=Number(input.price),cost=Number(input.cost),reorder=Number(input.reorder??2);
+ if(!/^[A-Z0-9][A-Z0-9_-]{2,39}$/.test(id)||!name||!category)throw Error("A unique SKU, product name and category are required");
+ if(!/^[A-Z0-9_-]{3,40}$/.test(barcode))throw Error("Invalid scan code");
+ if(state.products.some(p=>p.id===id||barcodeFor(p).toUpperCase()===barcode))throw Error("Duplicate SKU or barcode");
+ if(![qty,price,cost,reorder].every(Number.isSafeInteger)||qty<0||price<0||cost<0||reorder<0)throw Error("Use valid non-negative whole-number quantities and rupee prices");
+ const p={id,barcode,name,category,size:String(input.size||"One size").slice(0,30),color:String(input.color||"Unspecified").slice(0,40),qty,reorder,cost,price,published:false};
+ state.products.push(p);
+ if(qty)state.moves.push({type:"Opening balance",sku:id,delta:qty,before:0,after:qty,reference:"OPEN-"+id,date:new Date().toISOString()});
+ return p
+}
+export function cartAdd(state,lines,code,quantity=1){
+ const p=findByScan(state,code);if(!p)throw Error("Product/barcode not found");
+ if(!Number.isSafeInteger(quantity)||quantity<=0)throw Error("Invalid quantity");
+ const next=lines.map(x=>({...x}));const existing=next.find(x=>x.sku===p.id);
+ const updated=(existing?.quantity||0)+quantity;if(updated>p.qty)throw Error("Not enough stock");
+ if(existing)existing.quantity=updated;else next.push({sku:p.id,quantity});
+ return next;
+}
+export function checkout(state,lines,method,reference,at=new Date().toISOString()){
+ if(!Array.isArray(lines)||!lines.length)throw Error("Cart cannot be empty");
+ if(!["Cash","UPI","Card"].includes(method))throw Error("Choose a valid demo payment method");
+ if(!/^POS-[A-Za-z0-9-]{5,80}$/.test(String(reference)))throw Error("Invalid sale reference");
+ if(!Number.isFinite(Date.parse(at)))throw Error("Invalid sale date");
+ const existing=state.sales.find(x=>x.reference===reference);
+ if(existing)throw Error("Duplicate checkout blocked; existing sale "+reference);
+ const totals=new Map();
+ for(const line of lines){
+  const p=findByScan(state,line.sku);if(!p)throw Error("Unknown product");
+  if(!Number.isSafeInteger(line.quantity)||line.quantity<=0)throw Error("Invalid cart quantity");
+  totals.set(p.id,(totals.get(p.id)||0)+line.quantity);
+ }
+ for(const [sku,qty] of totals){const p=state.products.find(x=>x.id===sku);if(p.qty<qty)throw Error("Insufficient stock: "+sku)}
+ const items=Array.from(totals,([sku,quantity])=>{const p=state.products.find(x=>x.id===sku);return {sku,description:p.name+" / "+p.color+" / "+p.size,quantity,unitPrice:p.price,amount:p.price*quantity}});
+ const amount=items.reduce((n,x)=>n+x.amount,0);
+ const transaction={id:"sale-"+reference,reference,items,method,amount,quantity:items.reduce((n,x)=>n+x.quantity,0),date:at,status:"demo-completed",receiptNo:"DEMO-"+reference.slice(4)};
+ // All validations above, mutations below. Browser-local only; not a true ACID transaction.
+ for(const [sku,quantity] of totals){const p=state.products.find(x=>x.id===sku),before=p.qty;p.qty-=quantity;state.moves.push({type:"Sale",sku,delta:-quantity,before,after:p.qty,reference,date:at})}
+ state.sales.push(transaction);return transaction;
+}
+export function purchaseReceive(state,code,quantity,supplier,ref,role){
+ if(role!=="owner")throw Error("Only demo owner can access purchasing");
+ const p=findByScan(state,code);if(!p)throw Error("SKU not found");
+ if(!Number.isSafeInteger(quantity)||quantity<=0)throw Error("Invalid receipt quantity");
+ if(!/^GRN-[A-Za-z0-9-]{4,70}$/.test(String(ref)))throw Error("Invalid receipt reference");
+ if(!String(supplier||"").trim())throw Error("Supplier required");
+ state.purchases??=[];if(state.purchases.some(x=>x.ref===ref))throw Error("Duplicate goods receipt blocked");
+ const record={ref,sku:p.id,quantity,supplier:String(supplier).slice(0,100),date:new Date().toISOString(),status:"received"};
+ const before=p.qty;p.qty+=quantity;state.moves.push({type:"Goods receipt",sku:p.id,delta:quantity,before,after:p.qty,reference:ref,date:record.date});state.purchases.push(record);return record
+}
+export function salesReport(state,now=new Date()){
+ const t=now.getTime(),local=d=>{const x=new Date(d);return Number.isFinite(x.getTime())?x:null},startDay=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(),startWeek=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7)).getTime(),startMonth=new Date(now.getFullYear(),now.getMonth(),1).getTime();
+ const rows=state.sales.filter(s=>local(s.date)&&new Date(s.date).getTime()<=t);
+ const fold=since=>{const chosen=rows.filter(x=>new Date(x.date).getTime()>=since);return {transactions:chosen.length,amount:chosen.reduce((n,x)=>n+x.amount,0),units:chosen.reduce((n,x)=>n+(x.quantity||1),0)}};
+ const byCategory={};for(const x of rows){for(const i of x.items||[{sku:x.sku,amount:x.amount,quantity:x.quantity||1}]){const p=state.products.find(p=>p.id===i.sku),key=p?.category||"Other";byCategory[key]=(byCategory[key]||0)+i.amount}}
+ return {today:fold(startDay),week:fold(startWeek),month:fold(startMonth),byCategory};
+}
