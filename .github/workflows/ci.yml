@@ -57,3 +57,13 @@ jobs:
           curl --fail --location --silent --show-error --max-time 25 "$base/avatar-core.js" -o /tmp/otd-avatar-core.js
           grep -q "export function avatarSvg" /tmp/otd-avatar-core.js
           printf 'Real-person photo styling and fallback avatar are accessible\n'
+          curl --fail --location --silent --show-error --max-time 25 "$base/avatar3d-core.js" -o /tmp/otd-avatar3d-core.js
+          grep -q "export function normalize3DAvatar" /tmp/otd-avatar3d-core.js
+          curl --fail --location --silent --show-error --max-time 25 "$base/avatar3d-ui.js" -o /tmp/otd-avatar3d-ui.js
+          grep -q "export function avatar3DPage" /tmp/otd-avatar3d-ui.js
+          grep -q "otd-3d-stage" /tmp/otd-avatar3d-ui.js
+          curl --fail --location --silent --show-error --max-time 25 "$base/avatar3d-renderer.js" -o /tmp/otd-avatar3d-renderer.js
+          grep -q "export function mountAvatar3D" /tmp/otd-avatar3d-renderer.js
+          curl --fail --location --silent --show-error --max-time 25 "$base/" -o /tmp/otd-avatar3d-home.html
+          grep -q 'data-page="avatar3d"' /tmp/otd-avatar3d-home.html
+          printf 'Live 3D avatar resources and dedicated navigation are available\n'
