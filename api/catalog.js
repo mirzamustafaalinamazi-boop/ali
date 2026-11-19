@@ -1,0 +1,1 @@
+export default function handler(req,res){res.status(200).json({source:"fictional-demo",notice:"Actual merchant inventory is not integrated.",products:12,merchants:3,live:false})}
