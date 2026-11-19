@@ -66,3 +66,7 @@ The `#avatar` route now offers a customizable **illustrative 2D fashion avatar**
 ## Photo Styling Studio (real photograph, manual garment overlay)
 
 The `#photo` mode allows users to optionally select their own picture and place transparent clothing cutouts onto it using touch, size and opacity controls. It is private within the active browser tab and exports a manually composed PNG. This is **not** AI virtual try-on, accurate clothing fitting, 3D cloth simulation or body measurement. For exact scope and user privacy decisions see `docs/PHOTO_STYLING.md`.
+
+## OTD 360° Avatar Studio — no selfie required (interactive 3D beta)
+
+A **dedicated Avatar icon** now opens `/#avatar3d`. Users can personalize a procedural 3D character with face, hair, eyes, skin-tone options, body proportions and pose, rotate it 360 degrees, and preview their **confirmed closet items** or OTD Stylist outfit suggestions. Clothing is mapped to approximate 3D category silhouettes and basic colors; this is **not photorealistic**, exact garment reconstruction, a measurement model or guaranteed fit. The legacy `/#avatar` 2D fallback remains available. Three.js 0.180.0 is loaded over the internet for this demo and must be self-hosted before production. Technical acceptance gates are documented in `docs/AVATAR_3D_ROADMAP.md`.
