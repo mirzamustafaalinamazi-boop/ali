@@ -38,3 +38,14 @@ jobs:
           curl --fail --location --silent --show-error --max-time 25 "$base/api/health" -o /tmp/otd-health.json
           grep -q '"ok":true' /tmp/otd-health.json
           printf 'Health API responds\\n'
+          curl --fail --location --silent --show-error --max-time 25 "$base/manifest.webmanifest" -o /tmp/otd-manifest.json
+          grep -q '"short_name": "OTD"' /tmp/otd-manifest.json
+          printf 'Installable PWA manifest is accessible\n'
+          curl --fail --location --silent --show-error --max-time 25 "$base/api/catalog" -o /tmp/otd-catalog.json
+          grep -q '"demo":true' /tmp/otd-catalog.json
+          grep -q '"seedInventory":' /tmp/otd-catalog.json
+          printf 'Fictional catalog API is responding\n'
+          curl --fail --location --silent --show-error --max-time 25 "$base/api/recommend" -H 'Content-Type: application/json' -d '{"budget":7000,"occasion":"College","style":"Casual","size":"M","shoeSize":"40"}' -o /tmp/otd-recommend.json
+          grep -q '"method":"transparent-rules-not-trained-ML"' /tmp/otd-recommend.json
+          grep -q '"looks":' /tmp/otd-recommend.json
+          printf 'Rule-based recommendations API is responding\n'
