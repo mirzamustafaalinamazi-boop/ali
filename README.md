@@ -58,3 +58,7 @@ Implemented in the revised frontend:
 - Separate links to the fictional retail storefront and retailer SaaS demonstration.
 
 **Important:** The 69 screens in the source handout are a planned inventory, not a claim that 69 working screens exist. No genuine AI photo extraction, segmentation, hosted user authentication, account-isolated database, real weather data, trained AI stylist, commerce or native app has been completed. For a precise implementation gap map and investor demonstration protocol, read `docs/V31_IMPLEMENTATION_STATUS.md`.
+
+## Interactive 2D Avatar Studio (prototype)
+
+The `#avatar` route now offers a customizable **illustrative 2D fashion avatar** based on user-selected skin tone, hairstyle, silhouette and selected *confirmed closet garments*. You can open it from Home or directly from the **VIEW ON AVATAR** button on an outfit recommendation, or preview saved looks. This is **not** trained virtual try-on, realistic body fitting, 3D cloth simulation or photo-based identity reconstruction. See `docs/AVATAR_STUDIO.md` for accurate capability boundaries.
