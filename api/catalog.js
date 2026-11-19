@@ -1,1 +1,1 @@
-export default function handler(req,res){res.status(200).json({source:"fictional-demo",notice:"Actual merchant inventory is not integrated.",products:12,merchants:3,live:false})}
+import {products,stores,seedInventory,allOutlets} from '../public/data.js';export default function handler(req,res){res.setHeader('Cache-Control','public,max-age=120');res.status(200).json({demo:true,notice:'All merchants and stock are fictional; not real-time',products,stores,seedInventory,allOutlets});}
