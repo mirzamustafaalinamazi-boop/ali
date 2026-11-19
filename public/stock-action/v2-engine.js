@@ -67,3 +67,16 @@ export function paymentQrUri({vpa,payee,amount,reference}){
   const p=new URLSearchParams({pa:address,pn:String(payee||"Stock Action merchant").slice(0,60),am:Number(amount).toFixed(2),cu:"INR",tr:reference});
   return "upi://pay?"+p.toString();
 }
+
+export function receiptQrPayload(sale){
+ if(!/^POS-[A-Za-z0-9-]{5,80}$/.test(String(sale?.reference||"")))throw Error("Invalid receipt reference");
+ return "OTD-SALE:"+sale.reference;
+}
+export function verifyLocalReceipt(state,raw){
+ const code=String(raw||"").trim();
+ if(!code.startsWith("OTD-SALE:"))return {found:false};
+ const ref=code.slice("OTD-SALE:".length);
+ const row=state.sales.find(x=>x.reference===ref);
+ if(!row)return {found:false};
+ return {found:true,receiptNo:row.receiptNo||row.reference,total:row.amount,method:row.method,paymentStatus:row.payment?.status||"demo-only"};
+}
