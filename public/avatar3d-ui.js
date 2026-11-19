@@ -18,7 +18,7 @@ export function avatar3DPage(state={}){
  const wardrobe=confirmedGarments(state.wardrobe);
  const selected=owned3DOutfit(wardrobe,a);
  const owned=wardrobe.length;
- const saved=(state.looks||[]).filter(l=>Array.isArray(l.garmentIds)&&l.garmentIds.some(id=>wardrobe.some(g=>g.id===id)));
+ const saved=(state.looks||[]).map((l,i)=>({...l,originalIndex:i})).filter(l=>Array.isArray(l.garmentIds)&&l.garmentIds.some(id=>wardrobe.some(g=>g.id===id)));
  return '<section class="avatar3d-page v31-content"><div class="avatar3d-topline"><span class="v31-kicker">OTD / YOUR PRIVATE 3D AVATAR</span><span class="avatar3d-beta">LIVE 3D CHARACTER · BETA</span></div>'+
  '<div class="v31-heading"><h1>Meet the <em>other you.</em></h1></div><p class="v31-intro">Build a character with your own face, eyes, hair, skin tone and proportions—<strong>without submitting a selfie or any body photograph</strong>. Turn them all the way around and dress them from your confirmed closet. This is an interactive 3D styling character, not yet a scan-accurate digital twin or physical fitting engine.</p>'+
  '<div class="avatar3d-workspace"><div class="avatar3d-stage-wrap"><div class="avatar3d-badge"><span>✦ <strong>OTD / AVATAR STUDIO</strong></span><span>360° INTERACTIVE</span></div>'+
@@ -47,7 +47,7 @@ export function avatar3DPage(state={}){
  garmentChoice('accessory','Accessory / dupatta',wardrobe,selected.slots.accessory)+
  '<p class="avatar3d-small">Choosing a full-body garment replaces separate tops and bottoms on the avatar.</p>'+
  (owned?'<button class="v31-primary avatar3d-action" type="button" data-action="3d-style-me">✧ STYLE MY AVATAR FROM MY CLOSET</button>':'<div class="v31-notice">Start with a neutral 3D base outfit, or add clothing to your Closet to dress your character. The base outfit is not claimed as something you own.</div><button type="button" class="v31-primary avatar3d-action" data-action="v31-sample-closet">LOAD FICTIONAL DEMO CLOSET</button>')+
- (saved.length?'<div class="avatar3d-saved"><strong>YOUR SAVED OUTFITS</strong>'+saved.slice(0,7).map((l,i)=>'<button type="button" data-action="3d-saved:'+esc(l.id||i)+'">LOOK '+(i+1)+' → '+esc(l.garmentIds.map(id=>wardrobe.find(g=>g.id===id)?.name).filter(Boolean).join(' + ').slice(0,77))+'</button>').join('')+'</div>':'')+
+ (saved.length?'<div class="avatar3d-saved"><strong>YOUR SAVED OUTFITS</strong>'+saved.slice(0,7).map((l,i)=>'<button type="button" data-action="3d-saved:'+esc(l.id||l.originalIndex)+'">LOOK '+(i+1)+' → '+esc(l.garmentIds.map(id=>wardrobe.find(g=>g.id===id)?.name).filter(Boolean).join(' + ').slice(0,77))+'</button>').join('')+'</div>':'')+
  '</div></details></form>'+
  '<div class="avatar3d-extra"><button class="v31-primary" data-action="3d-capture">SAVE 3D PREVIEW ↓</button><button class="v31-secondary" data-action="3d-reset">RESET CHARACTER</button></div>'+
  '<div class="avatar3d-small">Changes save in this device browser only. 3D rendering requires an internet connection. <button type="button" data-action="nav:avatar" class="avatar3d-textlink">Use simplified 2D version</button>.</div></div></div>'+
