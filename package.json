@@ -1,0 +1,14 @@
+{
+  "name": "otd-mobile-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.js",
+    "check": "node --check public/app.js && node --check public/styling.js && node --check public/art.js && node --check public/data.js && node --check api/recommend.js && node --check server.mjs"
+  }
+}
