@@ -1,0 +1,7 @@
+import test from "node:test";import assert from "node:assert/strict";import {initialState,sale,count,receive,publish,publicProducts,metrics,suggest} from "../public/stock-action/engine.js";
+test("sale changes one SKU and rejects oversell",()=>{const s=initialState();const before=s.products[0].qty;sale(s,s.products[0].id,2,"A");assert.equal(s.products[0].qty,before-2);assert.throws(()=>sale(s,s.products[0].id,2,"B"),/Not enough/);assert.throws(()=>sale(s,s.products[0].id,1,"A"),/already used/)});
+test("physical count records variance",()=>{const s=initialState();const c=count(s,s.products[0].id,10,"cycle count");assert.equal(c.delta,7);assert.equal(s.products[0].qty,10);assert.equal(s.moves[0].delta,7)});
+test("receiving increases stock",()=>{const s=initialState();receive(s,s.products[0].id,3);assert.equal(s.products[0].qty,6)});
+test("public listing hides private and sold-out items and private cost",()=>{const s=initialState();publish(s,s.products[0].id,false);const publicRows=publicProducts(s);assert.ok(!publicRows.some(x=>x.id===s.products[0].id));assert.ok(!publicRows.some(x=>x.qty===0));assert.ok(!publicRows.some(x=>"cost" in x))});
+test("dashboard figures come from same inventory",()=>{const s=initialState();assert.equal(metrics(s).units,s.products.reduce((a,p)=>a+p.qty,0))});
+test("recommendation uses only published in-stock SKU",()=>{const s=initialState();const x=suggest(s);if(x)for(const p of x.items)assert.ok(publicProducts(s).some(y=>y.id===p.id))});
