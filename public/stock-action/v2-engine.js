@@ -51,6 +51,7 @@ export function ownerPublish(state,id,{photos,publicName,style,enabled}={},role)
   if(enabled===true&&incoming.length!==3)throw Error("Upload exactly three pictures before owner approval to publish");
   p.photos=incoming;p.publicName=name;p.listingStyle=style||p.listingStyle||"minimal";
   if(enabled!==undefined)p.published=Boolean(enabled);
+  else p.published=false; // Saving an edited draft revokes approval until the owner republishes.
   p.ownerApprovedAt=p.published?new Date().toISOString():null;
   return p;
 }
