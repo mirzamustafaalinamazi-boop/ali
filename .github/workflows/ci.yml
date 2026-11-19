@@ -18,3 +18,23 @@ jobs:
           node-version: '22'
       - run: npm test
       - run: npm run check
+
+  smoke-public-demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify published OTD demo is publicly accessible
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://otd-fashion-demo.vercel.app"
+          printf 'Checking homepage: %s\\n' "$base"
+          curl --fail --location --silent --show-error --max-time 25 "$base/" -o /tmp/otd-home.html
+          grep -qi 'OUTFIT OF THE DAY' /tmp/otd-home.html
+          printf 'Homepage works and contains OTD branding\\n'
+          curl --fail --location --silent --show-error --max-time 25 "$base/app.js" -o /tmp/otd-app.js
+          grep -q 'function discover' /tmp/otd-app.js
+          printf 'Frontend JavaScript asset is accessible\\n'
+          curl --fail --location --silent --show-error --max-time 25 "$base/api/health" -o /tmp/otd-health.json
+          grep -q '"ok":true' /tmp/otd-health.json
+          printf 'Health API responds\\n'
