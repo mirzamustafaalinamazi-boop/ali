@@ -101,3 +101,30 @@ header .toplink{color:var(--burnished)}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 @media(max-width:790px){.v31-hero{grid-template-columns:1fr}.v31-hero-copy{padding:42px 25px}.v31-hero-visual{min-height:240px}.v31-orbit{width:245px;height:245px}.v31-dashboard,.v31-feature-grid,.v31-planning-future{grid-template-columns:1fr}.v31-two-columns{grid-template-columns:1fr}.v31-garments{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){header{height:62px;gap:6px}.v31-brand-logo{height:42px;width:42px}header .toplink{font-size:8px}header small{font-size:8px}.v31-content{padding:35px 17px 100px}.v31-hero-copy{padding:38px 20px}.v31-hero h1{font-size:54px}.v31-hero-visual{min-height:230px}.v31-dashboard{gap:8px;margin-bottom:45px}.v31-dashboard>div{padding:17px}.v31-dashboard strong{font-size:29px}.v31-section-title h2{font-size:36px}.v31-separation{margin:35px 0;padding:27px}.v31-form-grid{grid-template-columns:1fr}.v31-panel{padding:20px}.v31-garments{gap:10px}.v31-garment-image{height:155px}.v31-garment-body{padding:11px}.v31-garment-body>strong{font-size:17px}.v31-nav-aux{font-size:10px;gap:8px}}
+
+
+/* OTD Avatar Studio: illustrative fashion-character builder */
+.avatar-page{padding-top:43px}
+.avatar-layout{display:grid;grid-template-columns:minmax(290px,.94fr) minmax(360px,1.06fr);gap:25px;align-items:start;margin:27px 0}
+.avatar-stage{background:linear-gradient(155deg,#E9D8C5,#D1AD86);border-radius:22px;border:1px solid #C4A789;position:sticky;top:95px;overflow:hidden;box-shadow:0 18px 45px rgba(58,36,24,.12)}
+.avatar-stage-top,.avatar-stage-bottom{display:flex;justify-content:space-between;gap:10px;align-items:center;color:#513523;letter-spacing:1.2px;font-size:10px;font-weight:700;padding:17px 19px}
+.avatar-stage-top{border-bottom:1px solid #BFA68E99}.avatar-stage-bottom{border-top:1px solid #BFA68E99}
+.avatar-illustration{display:grid;place-items:center;padding:5px 24px}
+.avatar-illustration svg{display:block;width:min(100%,430px);height:auto;max-height:620px;filter:drop-shadow(0 12px 12px rgba(58,36,24,.12))}
+.avatar-tools{display:flex;flex-direction:column;gap:18px}
+.avatar-panel-title{margin-bottom:25px}
+.avatar-panel-title h2,.avatar-tools h2,.avatar-future-note h2{font:400 29px 'Playfair Display',Georgia,serif;margin:8px 0 14px}
+.avatar-divider{height:1px;background:#D9C8B6;margin:25px 0}
+.avatar-apply{width:100%;margin:12px 0}
+.avatar-shortcuts .v31-secondary{margin:8px 5px 6px 0}
+.avatar-saved-list{display:flex;flex-direction:column;gap:8px}
+.avatar-saved-choice{padding:14px 15px;border:1px solid #CAB29D;border-radius:10px;background:#FAF2E8;color:#3A2418;display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:100%;text-align:left}
+.avatar-saved-choice strong{font-size:10px;letter-spacing:1.6px;color:#7B563B}
+.avatar-saved-choice span{font-size:13px;line-height:1.6}
+.avatar-saved-choice span:last-child{font-weight:700;letter-spacing:.6px;font-size:10px}
+.avatar-future-note{display:grid;grid-template-columns:1.3fr .7fr;gap:35px;padding:30px;background:#E8DBC9;border:1px solid #DBC7B3;border-radius:17px;margin-top:25px}
+.avatar-future-note p{font-size:13px;line-height:1.75;max-width:700px;color:#674B38}
+.avatar-roadmap{display:flex;flex-direction:column;gap:9px}
+.avatar-roadmap span{padding:11px 12px;background:#FBF6EC;border:1px solid #DAC7B2;border-radius:8px;font-size:12px;color:#5E4331}
+@media(max-width:900px){.avatar-layout{grid-template-columns:1fr}.avatar-stage{position:static}.avatar-illustration svg{max-height:490px}.avatar-future-note{grid-template-columns:1fr}}
+@media(max-width:650px){.avatar-page{padding-top:30px}.avatar-layout{gap:16px}.avatar-stage-top,.avatar-stage-bottom{font-size:9px;padding:12px 11px}.avatar-illustration{padding:0 10px}.avatar-illustration svg{max-height:460px}.avatar-future-note{padding:19px}.avatar-tools .v31-panel{padding:18px}}
