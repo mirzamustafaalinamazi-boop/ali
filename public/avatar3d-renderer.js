@@ -65,7 +65,7 @@ function addHair(g,a){
   const cap=new T.Mesh(new T.SphereGeometry(.319,32,16,0,Math.PI*2,0,Math.PI*.42),hair);
   cap.position.set(0,headY,0);cap.scale.set(1.03,1.08,1);g.add(cap);return;
  }
- const cap=new T.Mesh(new T.SphereGeometry(.331,30,18,0,Math.PI*2,0,Math.PI*.56),hair);
+ const cap=new T.Mesh(new T.SphereGeometry(.331,30,18,0,Math.PI*2,0,Math.PI*.47),hair);
  cap.position.set(0,headY+.006,0);cap.scale.set(1.02,1.03,1.01);g.add(cap);cap.castShadow=true;
  const segments=a.hairStyle==='Curly'?23:12;
  const long=['Long','Wavy','Ponytail','Bun','Curly'].includes(a.hairStyle);
@@ -173,7 +173,8 @@ function bodyGeometry(g,a,outfit){
  if(a.pose==='Relaxed')g.rotation.z=-.016;
 }
 function modelFromConfig(a,wardrobe){
- const group=new T.Group();const outfit=owned3DOutfit(wardrobe,a);
+ const group=new T.Group();const actual=owned3DOutfit(wardrobe,a);
+ const outfit=actual.garments.length?actual:{...actual,slots:{top:{category:'Tshirt',color:'Cream',material:'Cotton'},bottom:{category:'Trousers',color:'Brown',material:'Cotton'},shoes:{category:'Shoes',color:'White'},layer:null,full:null,accessory:null}};
  const skin=mat(SKIN_PALETTE[a.skin],'skin');
  bodyGeometry(group,a,outfit);addFace(group,a,skin);
  return group;
@@ -239,8 +240,7 @@ export function mountAvatar3D(target,config,wardrobe,onError){
   destroy(){
    if(disposed)return;disposed=true;cancelAnimationFrame(raf);ro.disconnect();
    canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',up);canvas.removeEventListener('wheel',wheel);canvas.removeEventListener('keydown',keydown);
-   scene.remove(model);disposeGroup(model);[stage,floor,backdrop].forEach(o=>{o.geometry.dispose();o.material.dispose();});smooth.dispose();
-   renderer.dispose();canvas.remove();
+   scene.remove(model);disposeGroup(model);[stage,floor,backdrop].forEach(o=>{o.geometry.dispose();o.material.dispose();});renderer.dispose();canvas.remove();
   }
  };
 }
