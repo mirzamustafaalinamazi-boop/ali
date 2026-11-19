@@ -128,3 +128,39 @@ header .toplink{color:var(--burnished)}
 .avatar-roadmap span{padding:11px 12px;background:#FBF6EC;border:1px solid #DAC7B2;border-radius:8px;font-size:12px;color:#5E4331}
 @media(max-width:900px){.avatar-layout{grid-template-columns:1fr}.avatar-stage{position:static}.avatar-illustration svg{max-height:490px}.avatar-future-note{grid-template-columns:1fr}}
 @media(max-width:650px){.avatar-page{padding-top:30px}.avatar-layout{gap:16px}.avatar-stage-top,.avatar-stage-bottom{font-size:9px;padding:12px 11px}.avatar-illustration{padding:0 10px}.avatar-illustration svg{max-height:460px}.avatar-future-note{padding:19px}.avatar-tools .v31-panel{padding:18px}}
+
+
+/* Inclusive local photo styling board — visually realistic personal photograph, not ML fitting */
+.photo-preview-page{max-width:1280px}
+.photo-privacy-banner{background:#E9DCC9;border:1px solid #D5BA9C;color:#4B3023;display:flex;gap:18px;align-items:center;padding:14px 18px;border-radius:13px;margin:15px 0 24px;font-size:13px;line-height:1.65}
+.photo-privacy-banner strong{font-size:11px;letter-spacing:1.2px;white-space:nowrap}
+.photo-layout{display:grid;grid-template-columns:minmax(360px,.98fr) minmax(340px,1.02fr);align-items:start;gap:25px}
+.photo-stage-wrap{border-radius:22px;overflow:hidden;border:1px solid #CAB098;background:#EAD9C6;position:sticky;top:95px;box-shadow:0 18px 45px #3A241818}
+.photo-stage-toolbar,.photo-stage-bottom{display:flex;justify-content:space-between;gap:8px;font-size:10px;font-weight:700;letter-spacing:1.3px;color:#5D4130;padding:14px 15px}
+.photo-stage{aspect-ratio:3/4;width:100%;position:relative;background:radial-gradient(circle at 45% 40%,#F4E8D9,#D7BDA4 80%);overflow:hidden;touch-action:none}
+.photo-person-image{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;user-select:none;pointer-events:none}
+.photo-stage-empty{height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:37px;color:#473226}
+.photo-empty-mark{font:400 clamp(58px,10vw,115px) 'Playfair Display',Georgia,serif;letter-spacing:-8px;opacity:.27}
+.photo-stage-empty h2{font:400 30px 'Playfair Display',serif;margin:12px 0}
+.photo-stage-empty p{font-size:14px;max-width:290px;line-height:1.75}
+.photo-stage-empty span{font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-top:13px}
+.photo-garment-layer{position:absolute;transform:translate(-50%,-50%);height:auto;max-width:none!important;cursor:grab;touch-action:none;user-select:none;object-fit:contain;filter:drop-shadow(0 8px 7px #3A241823)}
+.photo-garment-layer.is-active{outline:2px dashed #9C6030;outline-offset:3px}
+.photo-garment-layer:active{cursor:grabbing}
+.photo-controls{display:flex;flex-direction:column;gap:15px}
+.photo-controls .v31-panel h2,.photo-future-note h2,.photo-mode-invite h2{font:400 30px 'Playfair Display',Georgia,serif;margin:10px 0 16px}
+.photo-controls .v31-field input[type=file]{width:100%;font-size:13px;background:#FFF9F2}
+.photo-controls .v31-field input[type=range]{accent-color:#76452E;width:100%;min-height:28px}
+.photo-controls .v31-field strong{font-weight:600;font-size:15px;text-transform:none;letter-spacing:0}
+.photo-divider{height:1px;background:#DED1C2;margin:24px 0}
+.photo-layer-list{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+.photo-layer-choice{display:flex;justify-content:space-between;gap:8px;align-items:center;background:#F2E8DA;color:#563825;border:1px solid #D4BFA9;padding:11px 13px;border-radius:9px;font-size:12px;text-align:left}
+.photo-layer-choice.active{border:2px solid #70482D;background:#EAD7C2}
+.photo-future-note{background:#E9DDCE;border:1px solid #D6C3B0;padding:28px;border-radius:16px;margin-top:25px}
+.photo-future-note p:not(.v31-kicker){max-width:850px;color:#5A4535;font-size:13px;line-height:1.85}
+.photo-mode-invite{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:22px 0;padding:25px;background:linear-gradient(110deg,#E9D9C7,#F8EEE2);border:1px solid #D7BCA2;border-radius:15px}
+.photo-mode-invite h2{margin:8px 0;font-size:27px}
+.photo-mode-invite p:not(.v31-kicker){font-size:13px;line-height:1.65;color:#624B39}
+.photo-mode-invite button{white-space:nowrap}
+@media(max-width:900px){.photo-layout{grid-template-columns:1fr}.photo-stage-wrap{position:static;max-width:600px;margin:0 auto;width:100%}}
+@media(max-width:650px){.photo-privacy-banner{flex-direction:column;align-items:flex-start;gap:5px}.photo-controls .v31-panel{padding:20px}.photo-mode-invite{flex-direction:column;align-items:stretch;padding:20px}.photo-stage-toolbar,.photo-stage-bottom{font-size:9px;letter-spacing:.6px;padding:12px}.photo-stage{max-height:76svh}}

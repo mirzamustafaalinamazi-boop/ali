@@ -62,3 +62,7 @@ Implemented in the revised frontend:
 ## Interactive 2D Avatar Studio (prototype)
 
 The `#avatar` route now offers a customizable **illustrative 2D fashion avatar** based on user-selected skin tone, hairstyle, silhouette and selected *confirmed closet garments*. You can open it from Home or directly from the **VIEW ON AVATAR** button on an outfit recommendation, or preview saved looks. This is **not** trained virtual try-on, realistic body fitting, 3D cloth simulation or photo-based identity reconstruction. See `docs/AVATAR_STUDIO.md` for accurate capability boundaries.
+
+## Photo Styling Studio (real photograph, manual garment overlay)
+
+The `#photo` mode allows users to optionally select their own picture and place transparent clothing cutouts onto it using touch, size and opacity controls. It is private within the active browser tab and exports a manually composed PNG. This is **not** AI virtual try-on, accurate clothing fitting, 3D cloth simulation or body measurement. For exact scope and user privacy decisions see `docs/PHOTO_STYLING.md`.
