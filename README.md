@@ -42,3 +42,19 @@ The source follows the engineering practice of plan → tests → implement → 
 ## Next gated product phase
 
 Use a real hosted database and authenticated merchant/consumer accounts; per-retailer row-level isolation; server-side atomic inventory and one-use coupon transactions; verifiable content/media rights; observability; privacy controls and performance/security testing. Real checkout requires business/legal/tax/payment design and independent QA. See `docs/ARCHITECTURE.md`.
+
+
+## OTD consumer experience — master handout v3.1 (November 19, 2026)
+
+The investor demo's primary experience is now **wardrobe-first**, based on `OTD_COMPLETE_APP_MASTER_HANDOUT_V3_1.pdf`: **HOME / CLOSET / STYLE / PLAN / PROFILE**, with the core CTA **CREATE MY LOOK** and tagline **Your style. Every place.**
+
+Implemented in the revised frontend:
+- Header and hero use an optimized copy of the provided OTD dress-and-jacket logo.
+- Exact six-color brand system: espresso `#1A120E`, cocoa `#3A2418`, burnished brown `#6B4A2E`, caramel `#A88462`, champagne `#D5C4AE`, charcoal `#4A4A46`.
+- Editable Style DNA stored on this device.
+- Digital closet of manually reviewed, confirmed user-owned garments; optional local camera/gallery photo; traditional Indian attire categories.
+- Explainable outfit suggestions composed **only from confirmed garments** with partial-outfit fallback. Destination, occasion, mood, and **manually entered** weather.
+- Save looks, plan them on a local calendar, and export/delete device-local demo data.
+- Separate links to the fictional retail storefront and retailer SaaS demonstration.
+
+**Important:** The 69 screens in the source handout are a planned inventory, not a claim that 69 working screens exist. No genuine AI photo extraction, segmentation, hosted user authentication, account-isolated database, real weather data, trained AI stylist, commerce or native app has been completed. For a precise implementation gap map and investor demonstration protocol, read `docs/V31_IMPLEMENTATION_STATUS.md`.
