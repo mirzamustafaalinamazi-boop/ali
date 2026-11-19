@@ -48,3 +48,22 @@ test('no wardrobe produces an empty owned-outfit result and explicit visual-only
  assert.deepEqual(o.garments,[]);
  assert.match(RENDERER_NOTE,/Not a body scan or fit prediction|no garment scan, photorealistic body match/);
 });
+
+test('no-photo 3D avatar studio has a dedicated 360-degree scene and controls',async()=>{
+ const {avatar3DPage}=await import('../public/avatar3d-ui.js');
+ const html=avatar3DPage({wardrobe:closet,looks:[],avatar3d:{selectedGarmentIds:['kurta','trousers']}});
+ assert.match(html,/otd-3d-stage/);
+ assert.match(html,/360° INTERACTIVE/);
+ assert.match(html,/3d-style-me/);
+ assert.match(html,/Face &amp; identity/);
+ assert.match(html,/Body &amp; posture/);
+ assert.ok(!html.includes('id="photo-person-upload"'));
+ assert.ok(!html.includes('input type="file"'));
+});
+test('3D editor reflects existing user-confirmed clothes',async()=>{
+ const {avatar3DPage}=await import('../public/avatar3d-ui.js');
+ const html=avatar3DPage({wardrobe:closet,avatar3d:{selectedGarmentIds:['kurta','trousers','loafers']}});
+ assert.ok(html.includes('Green kurta'));
+ assert.ok(!html.includes('Not reviewed'));
+ assert.ok(!html.includes('Deleted'));
+});
