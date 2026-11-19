@@ -1,0 +1,17 @@
+export const seed = [
+{id:"SA-101-M",name:"Oxford Shirt",category:"Shirts",size:"M",color:"White",qty:3,reorder:3,cost:650,price:1299,published:false},
+{id:"SA-101-L",name:"Oxford Shirt",category:"Shirts",size:"L",color:"White",qty:7,reorder:3,cost:650,price:1299,published:true},
+{id:"SA-204-34",name:"Straight Jeans",category:"Denim",size:"34",color:"Indigo",qty:0,reorder:2,cost:900,price:1899,published:true},
+{id:"SA-108-XL",name:"Printed Kurta",category:"Ethnic",size:"XL",color:"Navy",qty:8,reorder:2,cost:800,price:1599,published:true},
+{id:"SA-121-S",name:"Everyday Top",category:"Tops",size:"S",color:"Olive",qty:5,reorder:2,cost:420,price:899,published:true},
+{id:"SA-225-32",name:"Tailored Trouser",category:"Bottoms",size:"32",color:"Beige",qty:4,reorder:2,cost:750,price:1499,published:false},
+{id:"SA-301-M",name:"Utility Jacket",category:"Jackets",size:"M",color:"Black",qty:4,reorder:2,cost:1100,price:2499,published:true}
+];
+export const initialState=()=>({products:structuredClone(seed),moves:[],sales:[],counts:[],shop:"Sample Fashion Studio"});
+export function sale(state,id,quantity,reference){const p=state.products.find(x=>x.id===id);if(!p)throw Error("SKU not found");if(!Number.isSafeInteger(quantity)||quantity<=0)throw Error("Quantity must be a positive integer");if(p.qty<quantity)throw Error("Not enough stock");if(state.sales.some(s=>s.reference===reference))throw Error("Sale reference already used");p.qty-=quantity;const item={id:"sale-"+(state.sales.length+1),reference,sku:id,quantity,amount:p.price*quantity,date:new Date().toISOString()};state.sales.push(item);state.moves.push({type:"Sale",sku:id,delta:-quantity,date:item.date,reference});return item}
+export function count(state,id,physical,note){const p=state.products.find(x=>x.id===id);if(!p)throw Error("SKU not found");if(!Number.isSafeInteger(physical)||physical<0)throw Error("Invalid physical count");const before=p.qty,delta=physical-before;p.qty=physical;const c={sku:id,before,physical,delta,note:String(note||"").slice(0,200),date:new Date().toISOString()};state.counts.push(c);if(delta)state.moves.push({type:"Count adjustment",sku:id,delta,date:c.date,note:c.note});return c}
+export function receive(state,id,quantity){const p=state.products.find(x=>x.id===id);if(!p)throw Error("SKU not found");if(!Number.isSafeInteger(quantity)||quantity<=0)throw Error("Invalid received quantity");p.qty+=quantity;state.moves.push({type:"Demo receipt",sku:id,delta:quantity,date:new Date().toISOString()})}
+export function publish(state,id,value){const p=state.products.find(x=>x.id===id);if(!p)throw Error("SKU not found");p.published=Boolean(value)}
+export function publicProducts(state){return state.products.filter(p=>p.published&&p.qty>0).map(p=>({id:p.id,name:p.name,category:p.category,size:p.size,color:p.color,price:p.price,available:p.qty}))}
+export function metrics(s){return {skus:s.products.length,units:s.products.reduce((n,p)=>n+p.qty,0),low:s.products.filter(p=>p.qty<=p.reorder).length,value:s.products.reduce((n,p)=>n+p.qty*p.cost,0),revenue:s.sales.reduce((n,p)=>n+p.amount,0)}}
+export function suggest(s){const available=publicProducts(s);const tops=available.filter(p=>["Shirts","Tops","Ethnic","Jackets"].includes(p.category));const bottoms=available.filter(p=>["Denim","Bottoms"].includes(p.category));if(!tops.length||!bottoms.length)return null;const top=tops[0],bottom=bottoms[0];return {items:[top,bottom],total:top.price+bottom.price,reason:"Demo rules choose available, published styles. No machine-learning model is connected."}}
