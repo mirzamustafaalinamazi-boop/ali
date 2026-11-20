@@ -18,15 +18,22 @@ jobs:
       - name: Prepare safe source workspaces
         run: |
           set -euo pipefail
-          mkdir -p /tmp/otd-export/demo /tmp/otd-export/team
+          mkdir -p /tmp/otd-export/demo /tmp/otd-export/team /tmp/otd-export/stock-action-feature
           rsync -a ./ /tmp/otd-export/demo/ --exclude='.git/' --exclude='.env' --exclude='.env.*' --exclude='node_modules/' --exclude='dist/' --exclude='build/' --exclude='coverage/' --exclude='*.pem' --exclude='*.p12' --exclude='*.keystore' --exclude='key.properties' --exclude='google-services.json'
           git clone -q --depth 1 https://github.com/Vasantjv-2005/Ai-fashion-companion-OTD.git /tmp/otd-team
           rsync -a /tmp/otd-team/ /tmp/otd-export/team/ --exclude='.git/' --exclude='.env' --exclude='.env.*' --exclude='node_modules/' --exclude='dist/' --exclude='build/' --exclude='coverage/' --exclude='.dart_tool/' --exclude='.gradle/' --exclude='.idea/' --exclude='.flutter-plugins*' --exclude='*.pem' --exclude='*.p12' --exclude='*.keystore' --exclude='*.jks' --exclude='key.properties' --exclude='google-services.json' --exclude='*.sqlite' --exclude='*.db' --exclude='*.log'
+          git clone -q --depth 1 --branch feature/stock-action-saas-demo https://github.com/mirzamustafaalinamazi-boop/ali.git /tmp/otd-stock-action
+          mkdir -p /tmp/otd-export/stock-action-feature/public /tmp/otd-export/stock-action-feature/docs /tmp/otd-export/stock-action-feature/tests
+          cp -R /tmp/otd-stock-action/public/stock-action /tmp/otd-export/stock-action-feature/public/
+          cp -R /tmp/otd-stock-action/docs/stock-action /tmp/otd-export/stock-action-feature/docs/
+          cp /tmp/otd-stock-action/docs/STOCK_ACTION_DELIVERY.md /tmp/otd-export/stock-action-feature/docs/
+          cp /tmp/otd-stock-action/tests/stock-action*.test.js /tmp/otd-export/stock-action-feature/tests/
           # Explicitly prevent accidentally bundling secrets from any unusual directory.
           find /tmp/otd-export -type f \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*.p12' -o -name '*.jks' -o -name '*.keystore' -o -name 'google-services.json' -o -name 'key.properties' \) -delete
           printf 'Investor demo: %s\nTeam repository: %s\nExcluded: .env*, signing keys, generated builds, installed dependencies.\nNo production dataset or credentials included.\n' "${GITHUB_SHA}" "$(cd /tmp/otd-team && git rev-parse HEAD)" > /tmp/otd-export/SOURCE_COMMIT_MANIFEST.txt
+          printf "Stock Action feature branch (not merged to main): %s\\n" "$(cd /tmp/otd-stock-action && git rev-parse HEAD)" >> /tmp/otd-export/SOURCE_COMMIT_MANIFEST.txt
           cd /tmp/otd-export
-          zip -q -r -9 /tmp/OTD_SOURCE_SAFE_EXPORT.zip demo team SOURCE_COMMIT_MANIFEST.txt
+          zip -q -r -9 /tmp/OTD_SOURCE_SAFE_EXPORT.zip demo team stock-action-feature SOURCE_COMMIT_MANIFEST.txt
           ls -lh /tmp/OTD_SOURCE_SAFE_EXPORT.zip
       - name: Upload safe source archive
         uses: actions/upload-artifact@v4
