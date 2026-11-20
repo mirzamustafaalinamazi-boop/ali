@@ -73,3 +73,11 @@ test('manual gallery entry supports user-reviewed drafts without forced camera',
  assert.ok(src.includes('confirm that I own'));
  assert.ok(!src.includes('capture="environment"'));
 });
+
+test('fictional sample wardrobe references are never mislabelled as verified customer-owned garments',()=>{
+ const sample={id:'sample-1',name:'Demo sari',category:'Saree',color:'Gold',confirmed:true,demo:true};
+ const r=rankOwnedOutfits([sample],{occasion:'Wedding'});
+ assert.match(r.notice,/Fictional sample/);
+ assert.equal(r.looks[0].items[0].provenance,'fictional-demo-sample');
+ assert.match(r.looks[0].items[0].explanation,/fictional/);
+});
