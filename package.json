@@ -9,6 +9,6 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test tests/*.test.js",
-    "check": "node --check public/app.js && node --check public/styling.js && node --check public/art.js && node --check public/data.js && node --check api/recommend.js && node --check server.mjs && node --check public/consumer-ui.js && node --check public/closet-engine.js && node --check public/otd-brand.js && node --check public/avatar-core.js && node --check public/avatar-ui.js && node --check public/photo-engine.js && node --check public/photo-preview.js && node --check public/avatar3d-core.js && node --check public/avatar3d-ui.js && node --check public/avatar3d-renderer.js"
+    "check": "node --check public/app.js && node --check public/styling.js && node --check public/art.js && node --check public/data.js && node --check api/recommend.js && node --check server.mjs && node --check public/consumer-ui.js && node --check public/closet-engine.js && node --check public/otd-brand.js && node --check public/avatar-core.js && node --check public/avatar-ui.js && node --check public/photo-engine.js && node --check public/photo-preview.js && node --check public/avatar3d-core.js && node --check public/avatar3d-ui.js && node --check public/avatar3d-renderer.js && node --check public/wardrobe-integrity.js && node --check public/local-media.js"
   }
 }
