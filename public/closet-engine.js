@@ -23,7 +23,8 @@ export function rankOwnedOutfits(wardrobe,ctx={}){
    score:parts.reduce((total,x)=>total+x._score,0),reason:'From your confirmed closet, for '+occasion.toLowerCase()+' and a '+mood.toLowerCase()+' mood. '+(weather==='Not provided'?'Weather not verified.':'Weather entered manually: '+weather+'.'),
    missing:missingSlots.length?'Complete the look: missing '+missingSlots.join(', ')+'.':''},items);
  }).sort((a,b)=>Number(b.complete)-Number(a.complete)||b.score-a.score).slice(0,3);
- return {looks,notice:looks.some(x=>x.complete)?'Recommendations use only your confirmed garments.':'A partial look is available. Add more garments for complete outfits.'};
+ const message=looks.some(x=>x.complete)?'Recommendations use only confirmed wardrobe entries.':'A partial look is available. Add more garments for complete outfits.';
+ return {looks,notice:message+(items.some(g=>g.demo)?' Fictional sample pieces are included for demonstration, not verified customer ownership.':'')};
 }
 export function validateGarment(g){
  const errors=[];if(!String(g.name||'').trim()||String(g.name).length>80)errors.push('Name must be 1–80 characters');
