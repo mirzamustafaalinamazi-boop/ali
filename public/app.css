@@ -228,6 +228,10 @@ header .toplink{color:var(--burnished)}
  .avatar3d-stage-footer{font-size:9px;letter-spacing:0;padding:8px 11px}.avatar3d-accordion-body{padding:17px}
  .avatar3d-accordion>summary{padding:15px;font-size:22px}
  .avatar3d-roadmap{padding:25px 18px}.avatar3d-toplink{padding:7px 8px;font-size:9px;margin-left:0}
- header small{display:none!important}.nav{grid-template-columns:repeat(6,minmax(0,1fr))}.nav button{min-width:0;font-size:21px;gap:3px}.nav button span{font-size:9px}
+ header small{display:none!important}.nav{grid-template-columns:repeat(5,minmax(0,1fr))}.nav button{min-width:0;font-size:21px;gap:3px}.nav button span{font-size:9px}
  .v31-nav-aux{justify-content:center;flex-wrap:wrap;gap:9px;padding:8px;font-size:10px}
 }
+
+/* OTD video-inspired release v1: familiar mobile navigation and accessible interaction. */
+.nav button{min-height:48px}.v31-feature:focus-visible,.avatar3d-stage-actions button:focus-visible{outline:3px solid #A88462;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.v31-feature:hover{transform:none!important}}
