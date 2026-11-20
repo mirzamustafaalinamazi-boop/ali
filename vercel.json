@@ -1,1 +1,1 @@
-{"version":2,"framework":null}
+{"version":2,"framework":null,"buildCommand":"npm ci --prefix avatar-studio && npm run prepare-assets --prefix avatar-studio && npm run build --prefix avatar-studio","outputDirectory":"public"}
