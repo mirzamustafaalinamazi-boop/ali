@@ -30,9 +30,11 @@ export function reconcileSavedLooks(looks,wardrobe){
 export function annotateCandidate(look,wardrobe){
  const current=getOwnedGarmentIds(wardrobe);
  const ids=Array.isArray(look?.garmentIds)?look.garmentIds.filter(id=>typeof id==='string'&&current.has(id)):[];
+ const byId=new Map((Array.isArray(wardrobe)?wardrobe:[]).filter(eligibleOwnedGarment).map(g=>[g.id,g]));
  return {...look,garmentIds:ids,items:ids.map(id=>({
   source:OTD_SOURCE_WARDROBE,stable_id:id,wardrobeItemId:id,
-  explanation:'Confirmed in the current device-local wardrobe',provenance:'user-reviewed-local'
+  explanation:byId.get(id)?.demo?'Clearly fictional wardrobe sample, for investor demonstration only':'Confirmed by user in the current device-local wardrobe',
+  provenance:byId.get(id)?.demo?'fictional-demo-sample':'user-reviewed-local'
  }))};
 }
 export function exportDemoUserData(state,createdAt=new Date().toISOString()){
