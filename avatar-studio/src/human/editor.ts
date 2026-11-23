@@ -95,14 +95,64 @@ type WearSlot = 'outfit' | 'shoes' | 'hat' | 'headwear';
 const CONFLICTS: Partial<Record<WearSlot, WearSlot>> = { hat: 'headwear', headwear: 'hat' };
 const BROW_SLIDERS = ['browHeight', 'browAngle', 'browDepth'];
 
-const GENDER_DEFAULTS: Record<'female' | 'male', Partial<HumanConfig>> = {
+export const GENDER_DEFAULTS: Record<'female' | 'male', Partial<HumanConfig>> = {
   female: {
-    gender: 0, skin: 'young_caucasian_female', hair: 'long01', hairColor: '#6b4428', eyebrows: 'eyebrow002', eyebrowColor: '#3d2618',
-    eyelashes: 'eyelashes02', clothes: ['female_casualsuit02', 'shoes02'],
+    gender: 0,
+    age: 0.08,
+    muscle: 0.35,
+    weight: 0.44,
+    height: 0.48,
+    cupSize: 0.52,
+    firmness: 0.65,
+    skin: 'young_caucasian_female',
+    hair: 'toigo_curled_under_bob',
+    hairColor: '#4a2e1b',
+    eyebrows: 'eyebrow002',
+    eyebrowColor: '#2f1c10',
+    eyelashes: 'eyelashes02',
+    clothes: ['toigo_halter_dress_midi', 'shoes02'],
+    detail: {
+      headOval: 0.35,
+      headWidth: -0.12,
+      jaw: -0.22,
+      chinWidth: -0.16,
+      cheekBones: 0.18,
+      cheekVolume: 0.16,
+      eyeSize: 0.18,
+      eyeOpening: 0.12,
+      eyeSpacing: -0.05,
+      upperLip: 0.16,
+      lowerLip: 0.22,
+      cupidsBow: 0.15,
+      noseWidth: -0.14,
+      noseLength: -0.10,
+      noseTip: 0.08,
+    },
   },
   male: {
-    gender: 1, skin: 'young_caucasian_male', hair: 'short02', hairColor: '#3d2618', eyebrows: 'eyebrow001', eyebrowColor: '#2a1c14',
-    eyelashes: 'eyelashes01', clothes: ['male_casualsuit02', 'shoes01'],
+    gender: 1,
+    age: 0.12,
+    muscle: 0.65,
+    weight: 0.52,
+    height: 0.58,
+    cupSize: 0,
+    firmness: 0.5,
+    skin: 'young_caucasian_male',
+    hair: 'culturalibre_hair_02',
+    hairColor: '#2b1d14',
+    eyebrows: 'eyebrow001',
+    eyebrowColor: '#20140c',
+    eyelashes: 'eyelashes01',
+    clothes: ['toigo_male_suit_3', 'shoes01'],
+    detail: {
+      headSquare: 0.25,
+      jaw: 0.20,
+      chinProminence: 0.12,
+      chinWidth: 0.15,
+      cheekBones: 0.12,
+      shoulders: 0.25,
+      vShape: 0.20,
+    },
   },
 };
 
@@ -269,7 +319,7 @@ export function createHumanEditor(source: HumanPackage | HumanManifest, options:
 
   function normalize(input?: Partial<HumanConfig> | null): HumanConfig {
     const c: HumanConfig = { ...base, ...input, ...options.locked, detail: { ...base.detail, ...input?.detail, ...options.locked?.detail } } as HumanConfig;
-    if (gender !== 'any') c.gender = options.locked?.gender ?? (gender === 'female' ? Math.min(c.gender, 0.3) : Math.max(c.gender, 0.7));
+    if (gender !== 'any') c.gender = options.locked?.gender ?? (gender === 'female' ? 0 : 1);
     for (const [k, v] of Object.entries(c.detail)) c.detail[k] = Math.max(-range, Math.min(range, v));
     // keep the chosen tone family, but follow the avatar's age and gender with the texture variant
     c.skin = skinFor(allowed.skin, skinBase(c.skin), c.age, c.gender) ?? pick(c.skin, allowed.skin, closestSkin(c.skin, allowed.skin, manifest) ?? base.skin) ?? c.skin;

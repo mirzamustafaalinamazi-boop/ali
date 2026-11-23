@@ -1,7 +1,7 @@
 import React,{useMemo,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {HumanEditor,useHumanPackage} from './web';
-import {createHumanEditor} from './human/editor';
+import {createHumanEditor, GENDER_DEFAULTS} from './human/editor';
 import type {HumanConfig} from './human/runtime';
 import {GUIDED_FACE_SHAPES,GUIDED_BODY_TYPES,applyFaceShape,applyBodyType,closestFaceShape,resetFaceDetails} from './presets';
 import type {ShapePreset,BodyPreset} from './presets';
@@ -17,7 +17,23 @@ type Handoff={appearance?:'male'|'female';heightCm?:string;weightKg?:string;ward
 const emptyProfile:Profile={heightCm:'',weightKg:'',faceId:'',bodyId:'',wardrobeIds:[]};
 function readJson(key:string):unknown{try{return JSON.parse(localStorage.getItem(key)||'null')}catch{return null}}
 function handoffStored():Handoff|null{try{const data=JSON.parse(sessionStorage.getItem(handoffKey)||'null');return data&&typeof data==='object'?data as Handoff:null}catch{return null}}
-function stored():Partial<HumanConfig>|undefined{const data=readJson(storageKey);return data&&typeof data==='object'?data as Partial<HumanConfig>:undefined}
+function stored():Partial<HumanConfig>|undefined{
+  const data=readJson(storageKey);
+  if(data&&typeof data==='object'){
+    const c=data as Partial<HumanConfig>;
+    if(c.gender===0.5||c.gender===undefined){
+      c.gender=0;
+    }
+    if(!c.clothes||!c.clothes.length){
+      c.clothes=c.gender===1?['toigo_male_suit_3','shoes01']:['toigo_halter_dress_midi','shoes02'];
+    }
+    if(!c.hair||c.hair==='bob02'){
+      c.hair=c.gender===1?'culturalibre_hair_02':'toigo_curled_under_bob';
+    }
+    return c;
+  }
+  return undefined;
+}
 function profileStored():Profile{const data=readJson(profileKey);const saved=data&&typeof data==='object'?{...emptyProfile,...data as Partial<Profile>}:emptyProfile;const handoff=handoffStored();return handoff?{...saved,heightCm:handoff.heightCm||saved.heightCm,weightKg:handoff.weightKg||saved.weightKg,wardrobeIds:Array.isArray(handoff.wardrobeIds)?handoff.wardrobeIds:saved.wardrobeIds}:saved}
 function closetStored():Garment[]{const handoff=handoffStored();const data=handoff?.wardrobe?handoff:readJson(closetKey) as {wardrobe?:unknown}|null;return Array.isArray(data?.wardrobe)?data.wardrobe.filter((g:Garment)=>g&&g.confirmed&&typeof g.id==='string'&&typeof g.name==='string'):[]}
 function download(name:string,data:string){const a=document.createElement('a');a.download=name;a.href=data;a.click()}
@@ -41,13 +57,32 @@ function App(){
   skinTones:['fair','light','warm','olive','tan','caramel','chestnut','brown','ebony'],
   items:{
    eyes:['brown','brownlight','blue','green','grey','bluegreen'],
-   hair:appearance==='female'?['long01','ponytail01','bob02','braid01','short01','rehmanpolanski_hair_bun_brown']:['short02','short03','short04','short01','culturalibre_hair_02','afro01'],
-   outfit:appearance==='female'?['female_casualsuit01','female_casualsuit02','female_elegantsuit01','dress_knee01','toigo_female_suit_2','abaya01']:['male_casualsuit01','male_casualsuit02','male_casualsuit05','male_elegantsuit01','male_worksuit01','toigo_male_suit_3'],
-   shoes:['shoes01','shoes02','shoes03','shoes04'],
+   hair:appearance==='female'
+     ?['toigo_curled_under_bob','cortu_straight_bangs','long01','ponytail01','toigo_blunt_bob_with_bangs','rehmanpolanski_hair_bun_brown','braid01','bob02','short01']
+     :['culturalibre_hair_02','short02','short03','short04','short01','afro01'],
+   outfit:appearance==='female'
+     ?['toigo_halter_dress_midi','toigo_camisole_dress_with_full_skirt','toigo_bodice_dress_with_lace_ruffle_skirt','dress_knee01','toigo_halter_dress_knee_length','toigo_strapless_ruffle_top_dress','female_casualsuit02','female_elegantsuit01','toigo_female_suit_2','dress_maxi01','abaya01','female_casualsuit01']
+     :['toigo_male_suit_3','toigo_suit_with_dinner_jacket','male_casualsuit02','male_casualsuit01','male_casualsuit05','male_elegantsuit01','male_worksuit01'],
+   shoes:['shoes02','shoes01','shoes03','shoes04'],
   },
  }),[appearance]);
  const complete=()=>pkg?createHumanEditor(pkg,{...options,sections:[...options.sections]}).normalize(config):null;
  const update=(next:HumanConfig)=>{setConfig(next);try{localStorage.setItem(storageKey,JSON.stringify(next))}catch{setMessage('Device storage is full. Save a preview before leaving.')}};
+ const switchAppearance=(newGender:'female'|'male')=>{
+  setAppearance(newGender);
+  const gDefaults=GENDER_DEFAULTS[newGender];
+  const nextConfig={
+   ...config,
+   ...gDefaults,
+   gender:newGender==='female'?0:1,
+   clothes:newGender==='female'?['toigo_halter_dress_midi','shoes02']:['toigo_male_suit_3','shoes01'],
+   hair:newGender==='female'?'toigo_curled_under_bob':'culturalibre_hair_02',
+   skin:newGender==='female'?'young_caucasian_female':'young_caucasian_male',
+   detail:{...gDefaults.detail},
+  };
+  update(nextConfig as HumanConfig);
+  setMessage(`Switched to ${newGender==='female'?'Feminine':'Masculine'} starting style.`);
+ };
  const updateProfile=(patch:Partial<Profile>)=>{const next={...profile,...patch};setProfile(next);try{localStorage.setItem(profileKey,JSON.stringify(next))}catch{setMessage('Device storage is full. Your measurements were not saved.')}};
  const save=(next:HumanConfig,png:string|null)=>{update(next);if(png)download('otd-my-avatar.png',png);setMessage(png?'Avatar saved on this device and PNG downloaded.':'Avatar saved on this device; PNG preview was unavailable.');};
  const chooseFace=(id:string)=>{const shape=GUIDED_FACE_SHAPES.find(s=>s.id===id),current=complete();if(!shape||!current)return;update(applyFaceShape(current,shape));updateProfile({faceId:id});setMessage(`${shape.name} starting shape applied. Fine tune the essential Face controls.`)};
@@ -60,9 +95,9 @@ function App(){
   <header className="site-head"><a className="back" href="/#home" aria-label="Back to OTD">← BACK TO OTD</a><div className="brand">OTD<span>FASHION AI</span></div><span className="header-tag">AVATAR STUDIO</span></header>
   <main>
    <div className="eyebrow">CREATE · CUSTOMIZE · STYLE</div>
-   <div className="intro"><div><h1>Your face. <em>Your avatar.</em></h1><p>Start with a selfie or choose a shape. Adjust the few details that matter most, then style the look.</p></div><div className="appearance"><span>STARTING FORM</span><button className={appearance==='female'?'active':''} onClick={()=>setAppearance('female')}>Feminine</button><button className={appearance==='male'?'active':''} onClick={()=>setAppearance('male')}>Masculine</button></div></div>
+   <div className="intro"><div><h1>Your face. <em>Your avatar.</em></h1><p>Start with a selfie or choose a shape. Adjust the few details that matter most, then style the look.</p></div><div className="appearance"><span>STARTING FORM</span><button className={appearance==='female'?'active':''} onClick={()=>switchAppearance('female')}>Feminine</button><button className={appearance==='male'?'active':''} onClick={()=>switchAppearance('male')}>Masculine</button></div></div>
    <div className="privacy"><strong>✦ YOUR PHOTO STAYS HERE</strong><span>Selfie analysis runs in this browser. The photo is not uploaded or saved. It suggests a restrained first fit that you can change.</span></div>
-   <div className="studio-frame">{error?<div className="loading">Could not load the 3D assets: {error.message}</div>:!pkg?<div className="loading">Preparing your 3D avatar and wardrobe…</div>:<HumanEditor key={appearance} pkg={pkg} options={{...options,sections:[...options.sections]}} value={config} onChange={update} onSelfieFit={onSelfieFit} onSave={save} saveLabel="SAVE AVATAR & PNG" selfie randomize={false} accentColor="#58351f" background="#d7bda9"/>}</div>
+   <div className="studio-frame">{error?<div className="loading">Could not load the 3D assets: {error.message}</div>:!pkg?<div className="loading">Preparing your 3D avatar and wardrobe…</div>:<HumanEditor key={appearance} pkg={pkg} options={{...options,sections:[...options.sections]}} value={config} onChange={update} onGenderChange={switchAppearance} onSelfieFit={onSelfieFit} onSave={save} saveLabel="SAVE AVATAR & PNG" selfie randomize={false} accentColor="#58351f" background="#d7bda9"/>}</div>
    {message&&<p className="notice" role="status">{message}</p>}
    <section className="choice-section" aria-labelledby="face-shape-heading"><div className="section-heading"><span>01 / FACE SHAPE</span><h2 id="face-shape-heading">A face that feels like you.</h2><p>Twenty familiar starting shapes. The selfie fit suggests one, and you can adjust width, jaw, cheeks, eyes, nose and lips in the Face tab.</p></div><button className="natural-reset" onClick={resetFace}>RESET FACE TO NATURAL</button><div className="shape-grid face-shapes">{GUIDED_FACE_SHAPES.map((s,i)=><button key={s.id} className={`shape-card ${profile.faceId===s.id?'selected':''}`} aria-pressed={profile.faceId===s.id} onClick={()=>chooseFace(s.id)}><FaceGlyph shape={s}/><small>{String(i+1).padStart(2,'0')} · {s.family}</small><strong>{s.name}</strong></button>)}</div><p className="section-note">These are editable visual starting points, not fixed labels for anyone's face.</p></section>
    <section className="choice-section" aria-labelledby="body-type-heading"><div className="section-heading"><span>02 / BODY TYPE</span><h2 id="body-type-heading">A relaxed, natural body.</h2><p>Pick a shape yourself, then adjust shoulders, chest, waist, hips, belly and buttocks. The default pose keeps arms comfortably at the sides.</p></div><div className="measurements"><label>Height (cm)<input type="number" min="80" max="250" step="0.1" inputMode="decimal" value={profile.heightCm} onChange={e=>updateProfile({heightCm:e.target.value})} placeholder="Optional"/></label><label>Weight (kg)<input type="number" min="20" max="350" step="0.1" inputMode="decimal" value={profile.weightKg} onChange={e=>updateProfile({weightKg:e.target.value})} placeholder="Optional"/></label><p>Measurements are recorded only. They never select or change a body type.</p></div><div className="shape-grid body-grid">{GUIDED_BODY_TYPES.map((s,i)=><button key={s.id} className={`shape-card ${profile.bodyId===s.id?'selected':''}`} aria-pressed={profile.bodyId===s.id} onClick={()=>chooseBody(s.id)}><BodyGlyph body={s}/><small>{String(i+1).padStart(2,'0')} / 08</small><strong>{s.name}</strong><span>{s.description}</span></button>)}</div></section>

@@ -12,7 +12,7 @@ import { gunzipSync } from 'fflate';
 import { DETAIL_SLIDERS } from './sliders';
 import { GlbPrimitive, readGlb, toFloat } from './glb';
 import { clothingInfo } from './catalog';
-import { applyRelaxedPose } from './pose';
+import { applyRelaxedPose, applyPose, PoseBlender } from './pose';
 
 // ---------------------------------------------------------------- config
 export interface HumanConfig {
@@ -46,10 +46,16 @@ export interface HumanConfig {
 }
 
 export const DEFAULT_HUMAN: HumanConfig = {
-  gender: 0.5, age: 0.15, muscle: 0.5, weight: 0.5, height: 0.5, proportions: 0.5, cupSize: 0.5, firmness: 0.5,
-  african: 1 / 3, asian: 1 / 3, caucasian: 1 / 3, detail: {},
-  skin: 'young_caucasian_female', skinTint: '#ffffff', eyes: 'brownlight', eyebrows: 'eyebrow001', eyebrowColor: '#3b2a1e',
-  eyelashes: 'eyelashes01', hair: 'bob02', hairColor: '#3b2a1e', clothes: ['female_casualsuit01', 'shoes01'],
+  gender: 0, age: 0.08, muscle: 0.35, weight: 0.44, height: 0.5, proportions: 0.6, cupSize: 0.52, firmness: 0.65,
+  african: 1 / 3, asian: 1 / 3, caucasian: 1 / 3,
+  detail: {
+    headOval: 0.35, headWidth: -0.12, jaw: -0.22, chinWidth: -0.16,
+    cheekBones: 0.18, cheekVolume: 0.16, eyeSize: 0.18, eyeOpening: 0.12,
+    eyeSpacing: -0.05, upperLip: 0.16, lowerLip: 0.22, cupidsBow: 0.15,
+    noseWidth: -0.14, noseLength: -0.10, noseTip: 0.08,
+  },
+  skin: 'young_caucasian_female', skinTint: '#ffffff', eyes: 'brownlight', eyebrows: 'eyebrow002', eyebrowColor: '#3b2a1e',
+  eyelashes: 'eyelashes02', hair: 'toigo_curled_under_bob', hairColor: '#4a2e1b', clothes: ['toigo_halter_dress_midi', 'shoes02'],
 };
 
 // ---------------------------------------------------------------- package
@@ -410,7 +416,7 @@ export class HumanAvatar {
   readonly group = new Group();
   private pkg: HumanPackage;
   private body: SkinnedMesh;
-  private skeleton: Skeleton;
+  readonly skeleton: Skeleton;
   private mh: Uint16Array;
   private fullIndex: Uint16Array | Uint32Array;
   private positions: Float32Array;
@@ -426,6 +432,8 @@ export class HumanAvatar {
   anisotropy = 4;
   /** Load clothing normal maps. Turn off for lighter mobile materials. */
   normalMaps = true;
+  /** Pose blender for smooth slerp transitions */
+  readonly poseBlender = new PoseBlender();
 
   constructor(pkg: HumanPackage) {
     this.pkg = pkg;
@@ -552,6 +560,17 @@ export class HumanAvatar {
     }
   }
   get expressionNames() { return this.exprNames.map((u) => this.alias(u)); }
+
+  /** Apply a cute / fashionable pose to the skeleton with optional momentum and smooth transitions. */
+  setPose(poseId: string, timeSeconds: number = 0, gender?: 'female' | 'male', garmentRadius?: number) {
+    this.poseBlender.setTarget(poseId);
+    const g = gender ?? (this.config.gender > 0.5 ? 'male' : 'female');
+    const hasLongGarment = this.config.clothes.some((c) => c.includes('dress') || c.includes('coat') || c.includes('robe') || c.includes('suit'));
+    const radius = garmentRadius ?? (hasLongGarment ? 0.24 : 0.21);
+    this.poseBlender.update(this.skeleton.bones, timeSeconds, g, radius);
+    this.group.updateMatrixWorld(true);
+    this.skeleton.update();
+  }
 
   private texture(key: string, nativeSize: number): Promise<Texture> {
     return this.pkg.getTexture(key, this.textureSize, nativeSize).then((tex) => {
@@ -713,6 +732,7 @@ export class HumanAvatar {
     }
     applyRelaxedPose(bones);
     this.group.updateMatrixWorld(true);
+    this.skeleton.update();
   }
 
   /** Head height and total height (world space at rest), for camera framing. */
