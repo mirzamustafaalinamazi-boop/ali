@@ -3,6 +3,7 @@
 import {validatePhotoFile,cleanLayer,placeLayerAt,calculateImageContain} from './photo-engine.js';
 const safe=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 let session={person:null,layers:[],active:-1};
+export function clearPhotoSession(){session={person:null,layers:[],active:-1};}
 let mounted=false,renderUI=()=>{},getState=()=>({});
 const asUrl=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result));reader.onerror=()=>reject(new Error('The image could not be read.'));reader.readAsDataURL(file)});
 const layerUI=(layer,index)=>'<img class="photo-garment-layer '+(index===session.active?'is-active':'')+'" src="'+safe(layer.src)+'" alt="'+safe(layer.name)+' overlay — drag to place" data-photo-layer="'+index+'" draggable="false" style="left:'+layer.x+'%;top:'+layer.y+'%;width:'+layer.width+'%;opacity:'+layer.opacity+'">';
